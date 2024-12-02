@@ -57,8 +57,8 @@ func _ready():
 
 func propriedadesInterface():
 	'''
-	Define as propriedades dos elementos fixos os dinamicos sao definidos no 
-	momento que sao criados.
+	Define as propriedades dos elementos da interface fixos, os dinamicos sao
+	definidos no momento que sao criados.
 	Crie a funcao para ser separado de func _ready(): para o codigo ser mais
 	legivel e simples de testar e modificar.
 	'''
@@ -294,7 +294,6 @@ func propriedadesInterface():
 	OptionButtonGraficoDoHistoricoDePrecosPorPeriodo.allow_reselect = true
 	OptionButtonGraficoDoHistoricoDePrecosPorPeriodo.custom_minimum_size = Vector2(600, 40)
 	OptionButtonGraficoDoHistoricoDePrecosPorPeriodo.tooltip_text = 'Escolha por qual Período o Gráfico do Histórico de Preços exibirá.'
-	OptionButtonGraficoDoHistoricoDePrecosPorPeriodo.visible = false
 	OptionButtonGraficoDoHistoricoDePrecosPorPeriodo.add_item('Dia', 0)
 	OptionButtonGraficoDoHistoricoDePrecosPorPeriodo.add_item('Mês', 1)
 	OptionButtonGraficoDoHistoricoDePrecosPorPeriodo.add_item('Ano', 2)
@@ -305,7 +304,6 @@ func propriedadesInterface():
 	ScrollContainerGraficoDoHistoricoDePrecos.follow_focus = true
 	ScrollContainerGraficoDoHistoricoDePrecos.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	ScrollContainerGraficoDoHistoricoDePrecos.custom_minimum_size = Vector2(600, 40)
-	ScrollContainerGraficoDoHistoricoDePrecos.visible = false
 	ScrollContainerGraficoDoHistoricoDePrecos.set_meta('maior_preco', 0.0)
 	ControlJanelaProduto.add_child(ScrollContainerGraficoDoHistoricoDePrecos)
 	
@@ -533,6 +531,12 @@ func redimensionamentoInterface():
 				indice_loja += 1
 
 func salvarDados():
+	'''
+	Funcao que salva os todos os dados de cada produto em um \"dados.json\".
+	\"dados.json\" fica no diretorio de onde o programa estiver.
+	So executada ao fechar o programa.
+	'''
+	
 	if len(nomes_produtos) > 0:
 		var texto_dados = '{\n\t\"nomes_produtos\": [\n\t\t\"'
 		var indice_produto = 0
@@ -613,6 +617,12 @@ func salvarDados():
 		FileAccessArquivoJSON.store_string(texto_dados)
 
 func carregarDados():
+	'''
+	Funcao que carrega todos os produtos e dados deles de \"dados.json\".
+	So carrega se \"dados.json\" existir / estiver criado.
+	Executada na abertura do programa somente.
+	'''
+	
 	var JSONDados = JSON.parse_string(FileAccess.get_file_as_string('res://dados.json'))
 	if JSONDados != null:
 		var cores_lojas = []
@@ -957,6 +967,7 @@ func irParaProduto(indice_produto):
 	ControlJanelaProduto.set_meta('indice_produto', indice_produto)
 	OptionButtonIncluirPrecosAtuaisPorLojaOuGraficoDoHistoricoDePrecos.select(0)
 	OptionButtonGraficoDoHistoricoDePrecosPorPeriodo.select(0)
+	incluirPrecosAtuaisPorLojaOuGraficoDoHistoricoDePrecos()
 	carregarPrecosPorLoja()
 	gerarGraficoHistoricoDePrecos()
 	ControlJanelaProduto.visible = true
@@ -1156,6 +1167,7 @@ func confirmarAdicao():
 		LabelTagsDoProduto.text = listaTagsParaTexto(tags_produtos[indice_produto])
 		OptionButtonIncluirPrecosAtuaisPorLojaOuGraficoDoHistoricoDePrecos.select(0)
 		OptionButtonGraficoDoHistoricoDePrecosPorPeriodo.select(0)
+		incluirPrecosAtuaisPorLojaOuGraficoDoHistoricoDePrecos()
 		carregarPrecosPorLoja()
 		gerarGraficoHistoricoDePrecos()
 		filtrarProdutosPorNomeETags()
@@ -1207,13 +1219,15 @@ func confirmarEdicao():
 		LabelTagsDoProduto.text = listaTagsParaTexto(tags_produtos[indice_produto])
 		OptionButtonIncluirPrecosAtuaisPorLojaOuGraficoDoHistoricoDePrecos.select(0)
 		OptionButtonGraficoDoHistoricoDePrecosPorPeriodo.select(0)
+		incluirPrecosAtuaisPorLojaOuGraficoDoHistoricoDePrecos()
 		carregarPrecosPorLoja()
 		gerarGraficoHistoricoDePrecos()
 		filtrarProdutosPorNomeETags()
 		ControlJanelaProduto.visible = true
 
 # Funcoes Janela Produto
-func incluirPrecosAtuaisPorLojaOuGraficoDoHistoricoDePrecos(opcao):
+func incluirPrecosAtuaisPorLojaOuGraficoDoHistoricoDePrecos(opcao = 0):
+	opcao = OptionButtonIncluirPrecosAtuaisPorLojaOuGraficoDoHistoricoDePrecos.selected
 	match opcao:
 		0:
 			OptionButtonGraficoDoHistoricoDePrecosPorPeriodo.visible = false
